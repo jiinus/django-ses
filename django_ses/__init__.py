@@ -195,7 +195,10 @@ class SESBackend(BaseEmailBackend):
 
             def _encode(val):
                 if val:
-                    return val.encode()
+                    if isinstance(val, tuple):
+                        return (_encode(_) for _ in val)
+                    else:
+                        return val.encode()
                 else:
                     return val
 
