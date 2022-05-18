@@ -197,7 +197,7 @@ class SESBackend(BaseEmailBackend):
                 Source=source or message.from_email,
                 Destinations=message.recipients(),
                 # todo attachments?
-                RawMessage={'Data': dkim_sign(message.message().as_string(),
+                RawMessage={'Data': dkim_sign(message.message().as_string().encode(),
                                               dkim_key=self.dkim_key,
                                               dkim_domain=self.dkim_domain,
                                               dkim_selector=self.dkim_selector,
