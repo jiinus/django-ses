@@ -193,15 +193,21 @@ class SESBackend(BaseEmailBackend):
                 recent_send_times.append(now)
                 # end of throttling
 
+            def _encode(val):
+                if val:
+                    return val.encode()
+                else:
+                    return val
+
             kwargs = dict(
                 Source=source or message.from_email,
                 Destinations=message.recipients(),
                 # todo attachments?
-                RawMessage={'Data': dkim_sign(message.message().as_string().encode(),
-                                              dkim_key=self.dkim_key.encode(),
-                                              dkim_domain=self.dkim_domain.encode(),
-                                              dkim_selector=self.dkim_selector,
-                                              dkim_headers=self.dkim_headers)}
+                RawMessage={'Data': dkim_sign(_encode(message.message().as_string()),
+                                              dkim_key=_encode(self.dkim_key),
+                                              dkim_domain=_encode(self.dkim_domain),
+                                              dkim_selector=_encode(self.dkim_selector),
+                                              dkim_headers=_encode(self.dkim_headers))}
             )
             if self.ses_source_arn:
                 kwargs['SourceArn'] = self.ses_source_arn
