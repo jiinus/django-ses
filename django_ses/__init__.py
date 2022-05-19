@@ -29,6 +29,15 @@ recent_send_times = []
 logger = logging.getLogger('django_ses')
 
 
+def as_bytes(val):
+    if isinstance(val, bytes):
+        return val
+    elif isinstance(val, str):
+        return val.encode()
+    else:
+        return val
+
+
 def dkim_sign(message, dkim_domain=None, dkim_key=None, dkim_selector=None, dkim_headers=None):
     """Return signed email message if dkim package and settings are available."""
     try:
@@ -37,11 +46,11 @@ def dkim_sign(message, dkim_domain=None, dkim_key=None, dkim_selector=None, dkim
         pass
     else:
         if dkim_domain and dkim_key:
-            sig = dkim.sign(message,
-                            dkim_selector,
-                            dkim_domain,
-                            dkim_key,
-                            include_headers=dkim_headers)
+            sig = dkim.sign(as_bytes(message),
+                            as_bytes(dkim_selector),
+                            as_bytes(dkim_domain),
+                            as_bytes(dkim_key),
+                            include_headers=as_bytes(dkim_headers))
             message = sig + message
     return message
 
