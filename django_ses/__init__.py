@@ -32,6 +32,8 @@ logger = logging.getLogger('django_ses')
 def as_bytes(val):
     if isinstance(val, bytes):
         return val
+    elif isinstance(val, tuple):
+        return tuple(as_bytes(_) for _ in val)
     elif isinstance(val, str):
         return val.encode()
     else:
